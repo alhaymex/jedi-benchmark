@@ -14,7 +14,6 @@ export function calculateAggregatedScores(
 ): AggregatedScores[] {
   // Group responses by model
   const byModel: Record<string, ScoredResponse[]> = {};
-
   for (const r of responses) {
     if (!byModel[r.modelName]) byModel[r.modelName] = [];
     byModel[r.modelName]!.push(r);
@@ -23,30 +22,45 @@ export function calculateAggregatedScores(
   const results: AggregatedScores[] = [];
 
   for (const [modelName, scores] of Object.entries(byModel)) {
-    // Justice Quality Score (JQS) = average total score of all stages
-    const totalSum = scores.reduce((acc, r) => acc + r.totalScore, 0);
-    const stagesCounted = scores.length;
-    const maxPerStage = 5 * 3; // 3 metrics max, each max 5 points
+    let totalSum = 0;
+    let totalMaxPossible = 0;
 
+    for (const r of scores) {
+      totalSum += r.totalScore;
+      // ✅ Dynamically calculate max possible for this stage
+      const stageMax = Object.keys(r.scores).length * 5;
+      totalMaxPossible += stageMax;
+    }
+
+    const stagesCounted = scores.length;
+
+    // ✅ Justice Quality Score (JQS)
     const justiceQualityScore = Number(
-      ((totalSum / (stagesCounted * maxPerStage)) * 100).toFixed(2)
+      ((totalSum / totalMaxPossible) * 100).toFixed(2)
     );
 
-    // Bias Risk Score (BRS) = inverse normalized average of Stage 3 & 4 scores
-    const biasStages = scores.filter((r) => r.stage === 3 || r.stage === 4);
-    const biasSum = biasStages.reduce((acc, r) => acc + r.totalScore, 0);
-    const biasCount = biasStages.length;
-    const brsRaw = biasCount > 0 ? biasSum / (biasCount * maxPerStage) : 1;
-    // Inverse and convert to percentage (100 means low bias risk)
+    // ✅ Bias Risk Score (BRS) — inverse normalized average of Stage 3 & 4
+    let biasSum = 0;
+    let biasMaxPossible = 0;
+    for (const r of scores.filter((s) => s.stage === 3 || s.stage === 4)) {
+      biasSum += r.totalScore;
+      biasMaxPossible += Object.keys(r.scores).length * 5;
+    }
+    const brsRaw = biasMaxPossible > 0 ? biasSum / biasMaxPossible : 1;
     const biasRiskScore = Number(((1 - brsRaw) * 100).toFixed(2));
 
-    // Adaptability Index (AI) = normalized score of Stage 5
+    // ✅ Adaptability Index (AI) — Stage 5 normalized
     const adaptabilityStage = scores.find((r) => r.stage === 5);
     const adaptabilityIndex = adaptabilityStage
-      ? Number(((adaptabilityStage.totalScore / maxPerStage) * 100).toFixed(2))
+      ? Number(
+          (
+            (adaptabilityStage.totalScore /
+              (Object.keys(adaptabilityStage.scores).length * 5)) *
+            100
+          ).toFixed(2)
+        )
       : 0;
 
-    // Save final scores
     results.push({
       modelName,
       justiceQualityScore,

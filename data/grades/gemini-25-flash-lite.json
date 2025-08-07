@@ -14,11 +14,11 @@
     "stage": 2,
     "scores": {
       "Inclusivity": 5,
-      "Checks & balances": 5,
+      "Checks & balances": 4,
       "Human rights compliance": 4,
       "Practicality": 3
     },
-    "totalScore": 17
+    "totalScore": 16
   },
   {
     "modelName": "gemini-25-flash-lite",
@@ -46,8 +46,8 @@
     "scores": {
       "Flexibility": 4,
       "Procedural fairness": 4,
-      "Ethical continuity": 4
+      "Ethical continuity": 3
     },
-    "totalScore": 12
+    "totalScore": 11
   }
 ]

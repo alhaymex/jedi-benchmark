@@ -17,10 +17,11 @@ export async function evaluateAllModels() {
   const outputDir = path.resolve("data", "evaluations");
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
-  const results: ModelResponse[] = [];
-
   for (const { name, model } of modelsToTest) {
     console.log(`\n🔍 Running benchmark for: ${name}`);
+
+    // ✅ Reset results for each model
+    const results: ModelResponse[] = [];
 
     for (const stage of allStages) {
       console.log(`  🧪 Stage ${stage.stage}: ${stage.name}`);
@@ -28,6 +29,7 @@ export async function evaluateAllModels() {
       const { text } = await generateText({
         model,
         prompt: stage.prompt,
+        maxOutputTokens: 3000, // optional: increase to avoid truncation
       });
 
       results.push({
@@ -36,6 +38,7 @@ export async function evaluateAllModels() {
         content: text,
       });
     }
+
     const safeFileName = slugify(name) + ".json";
     const outPath = path.join(outputDir, safeFileName);
 
