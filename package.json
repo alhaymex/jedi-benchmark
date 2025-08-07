@@ -1,0 +1,24 @@
+{
+  "name": "jedi-benchmark",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "dotenv": "^17.2.1"
+  },
+  "scripts": {
+    "test:benchmark": "bun run src/evaluator/evaluateModels.ts",
+    "grade:benchmark": "bun run src/grader/autoGradeResponses.ts",
+    "scores": "bun run src/cli/calcScores.ts"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@openrouter/ai-sdk-provider": "^1.1.0",
+    "ai": "^5.0.8",
+    "chalk": "^5.5.0",
+    "inquirer": "^12.9.0"
+  }
+}
