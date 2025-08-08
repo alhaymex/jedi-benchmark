@@ -1,5 +1,8 @@
 # 🧑‍⚖️ J.E.D.I. — Justice Emergence & Design Index
 
+## Warning
+This code is jancky and mostly written by AI and the entire test started from a joke
+
 The **J.E.D.I. Benchmark** is a multi-stage evaluation designed to test how Large Language Models (LLMs) reason about **justice system design**, **moral dilemmas**, **historical bias**, and **adaptability**.
 
 It runs **five structured stages**:
@@ -145,4 +148,3 @@ export const EVALUATION_MODEL = "openai/gpt-5-chat"; // or any other model from 
 - Costs can grow quickly if you run many models with high token limits — monitor your OpenRouter usage.
 
 ---
-
